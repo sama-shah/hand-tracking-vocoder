@@ -6,82 +6,123 @@
 <title>Hand Vocoder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0a1016; --ink-2:#111c26; --panel:#16232f; --line:#25384a;
-    --slate:#7d94a6; --chalk:#dbe6ee; --phos:#ffb545; --phos-dim:#7a5320;
-    --vision:#3fe0d0; --alert:#ff6a5e;
+    --bg:#ffffff; --bg-2:#f7f8fa; --bg-3:#eef1f5;
+    --line:#e4e8ec; --line-2:#d3dae1;
+    --ink:#0b1013; --body:#39434e; --muted:#6d7885;
+    --accent:#1a8fd1; --accent-soft:#e9f4fb;
+    --hot:#d97706; --hot-soft:#fdf3e4;
+    --alert:#dc2626;
+    --sans:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{
-    background:radial-gradient(1100px 600px at 15% -10%, #14232f 0%, transparent 60%), var(--ink);
-    color:var(--chalk); font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace;
-    font-size:13px; -webkit-font-smoothing:antialiased;
+    background:var(--bg); color:var(--body);
+    font-family:var(--sans); font-size:15px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   }
-  .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 48px}
-  header{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--line)}
-  h1{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:26px;letter-spacing:.14em;text-transform:uppercase;margin:0;line-height:1}
-  h1 span{color:var(--phos)}
-  .sub{color:var(--slate);font-size:12px;margin:0 0 2px;flex:1;min-width:220px}
-  .status{display:flex;align-items:center;gap:8px;color:var(--slate);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--line);box-shadow:0 0 0 3px rgba(255,255,255,.03)}
-  .dot.live{background:var(--phos);box-shadow:0 0 12px var(--phos)}
-  .dot.err{background:var(--alert);box-shadow:0 0 12px var(--alert)}
-  button{font-family:Archivo,system-ui,sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:12px;padding:11px 20px;border-radius:2px;cursor:pointer;background:var(--phos);color:#20140a;border:1px solid var(--phos);transition:filter .15s ease,transform .06s ease}
-  button:hover{filter:brightness(1.1)}
-  button:active{transform:translateY(1px)}
-  button.ghost{background:transparent;color:var(--slate);border-color:var(--line)}
-  button.ghost:hover{color:var(--chalk);border-color:var(--slate)}
-  button:focus-visible{outline:2px solid var(--vision);outline-offset:2px}
-  .grid{display:grid;grid-template-columns:1.35fr .65fr;gap:18px;margin-top:18px}
-  @media (max-width:860px){.grid{grid-template-columns:1fr}}
-  .stage{position:relative;background:#060b0f;border:1px solid var(--line);border-radius:3px;overflow:hidden;aspect-ratio:4/3}
+  .wrap{max-width:1120px;margin:0 auto;padding:40px 24px 72px}
+
+  .eyebrow{color:var(--accent);font-size:14px;font-weight:600;margin:0 0 10px}
+  header{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  .head-text{flex:1;min-width:280px}
+  h1{font-size:40px;font-weight:800;letter-spacing:-.028em;line-height:1.1;color:var(--ink);margin:0 0 8px}
+  .sub{color:var(--body);font-size:16px;margin:0;max-width:62ch}
+  .head-actions{display:flex;align-items:center;gap:12px;padding-bottom:4px}
+  .status{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px;font-weight:500}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line-2)}
+  .dot.live{background:var(--hot);box-shadow:0 0 0 3px var(--hot-soft)}
+  .dot.err{background:var(--alert);box-shadow:0 0 0 3px #fdeaea}
+
+  button{
+    font-family:inherit;font-weight:600;font-size:14px;padding:9px 17px;border-radius:8px;cursor:pointer;
+    background:var(--ink);color:#fff;border:1px solid var(--ink);
+    transition:background .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease;
+  }
+  button:hover{background:#232e37;border-color:#232e37}
+  button:active{transform:translateY(.5px)}
+  button.ghost{background:#fff;color:var(--body);border-color:var(--line-2);box-shadow:0 1px 2px rgba(11,16,19,.04)}
+  button.ghost:hover{background:var(--bg-2);color:var(--ink);border-color:#bcc5ce}
+  button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .grid{display:grid;grid-template-columns:1.4fr .6fr;gap:20px;margin-top:26px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+
+  .stage{position:relative;background:var(--bg-3);border:1px solid var(--line);border-radius:12px;overflow:hidden;aspect-ratio:4/3}
   .stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-  .stage video{filter:saturate(.35) contrast(1.05) brightness(.62)}
+  .stage video{filter:saturate(.92) contrast(1.02)}
   .gatebadge{
-    position:absolute;left:14px;top:14px;z-index:3;display:flex;align-items:center;gap:9px;
-    font-family:Archivo,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
-    padding:8px 13px;border-radius:2px;border:1px solid var(--line);background:rgba(6,11,15,.78);color:var(--slate);
+    position:absolute;left:14px;top:14px;z-index:3;display:flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.01em;
+    padding:7px 13px;border-radius:999px;border:1px solid var(--line);
+    background:rgba(255,255,255,.92);backdrop-filter:blur(6px);color:var(--muted);
+    box-shadow:0 1px 3px rgba(11,16,19,.08);
     transition:color .12s ease,border-color .12s ease
   }
-  .gatebadge.on{color:var(--phos);border-color:var(--phos)}
-  .gatebadge i{width:7px;height:7px;border-radius:50%;background:currentColor;font-style:normal}
-  .gatebar{position:absolute;left:0;bottom:0;height:3px;background:var(--phos);z-index:3;width:0}
-  .hint{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:var(--slate);padding:24px;gap:6px;z-index:4;background:rgba(6,11,15,.8)}
-  .hint b{color:var(--chalk);font-family:Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase}
-  .rack{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:14px;display:flex;flex-direction:column;gap:12px}
-  .rack h2{font-family:Archivo,sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--slate);margin:0;font-weight:500}
-  #ladder{width:100%;height:220px;display:block;background:#080f15;border:1px solid var(--line);border-radius:2px}
-  .readout{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:12px;align-items:baseline}
-  .readout dt{color:var(--slate)}
-  .readout dd{margin:0;color:var(--phos);text-align:right;font-variant-numeric:tabular-nums}
-  .readout dd.vis{color:var(--vision)}
-  .console{margin-top:18px;background:var(--ink-2);border:1px solid var(--line);border-radius:3px;padding:16px}
-  .rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px 26px}
-  .ctl{display:grid;gap:5px}
-  .ctl label{display:flex;justify-content:space-between;gap:10px;color:var(--slate);font-size:11px;letter-spacing:.09em;text-transform:uppercase}
-  .ctl label b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
-  .ctl .src{font-size:9px;letter-spacing:.14em;color:var(--phos-dim);font-style:normal}
-  .ctl .src.hand{color:var(--vision)}
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;cursor:pointer}
-  input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line)}
-  input[type=range]::-moz-range-track{height:2px;background:var(--line)}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:16px;background:var(--chalk);margin-top:-7px;border-radius:1px}
-  input[type=range]::-moz-range-thumb{width:11px;height:16px;background:var(--chalk);border:0;border-radius:1px}
-  input[type=range]:focus-visible{outline:2px solid var(--vision);outline-offset:4px}
-  select{background:var(--panel);color:var(--chalk);border:1px solid var(--line);border-radius:2px;padding:7px 9px;font-family:inherit;font-size:12px;width:100%}
-  .toggles{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-  .map{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-  .card{border:1px solid var(--line);border-left:2px solid var(--vision);padding:12px 14px;background:var(--ink-2);border-radius:0 3px 3px 0}
-  .card.key{border-left-color:var(--phos)}
-  .card.key h3{color:var(--phos)}
-  .card h3{font-family:Archivo,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 8px;color:var(--vision)}
-  .card p{margin:0 0 5px;color:var(--slate);line-height:1.55}
-  .card p b{color:var(--chalk);font-weight:400}
-  .note{margin-top:20px;color:var(--slate);font-size:11.5px;line-height:1.7;border-top:1px solid var(--line);padding-top:14px}
-  .note b{color:var(--phos);font-weight:400}
+  .gatebadge.on{color:var(--hot);border-color:#f0c88a}
+  .gatebadge i{width:6px;height:6px;border-radius:50%;background:currentColor;font-style:normal}
+  .gatebar{position:absolute;left:0;bottom:0;height:3px;background:var(--hot);z-index:3;width:0}
+  .hint{
+    position:absolute;inset:0;display:grid;place-content:center;text-align:center;
+    color:var(--muted);font-size:14px;padding:28px;gap:6px;z-index:4;background:rgba(247,248,250,.94)
+  }
+  .hint b{color:var(--ink);font-size:16px;font-weight:700;letter-spacing:-.01em}
+
+  .rack{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px}
+  h2{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0}
+  #ladder{width:100%;height:210px;display:block;background:#fff;border:1px solid var(--line);border-radius:8px}
+  .readout{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;align-items:baseline;margin:0}
+  .readout dt{color:var(--muted)}
+  .readout dd{margin:0;color:var(--ink);text-align:right;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+  .readout dd.vis{color:var(--accent)}
+
+  .console{margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px}
+  .rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:18px 28px}
+  .ctl{display:grid;gap:7px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline;gap:10px;color:var(--muted);font-size:13px;font-weight:500}
+  .ctl label b{color:var(--ink);font-weight:500;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+  .ctl .src{
+    font-family:var(--sans);font-size:10px;font-weight:600;font-style:normal;letter-spacing:.03em;
+    color:var(--muted);background:var(--bg-3);border-radius:4px;padding:1px 5px;margin-left:2px
+  }
+  .ctl .src.hand{color:var(--accent);background:var(--accent-soft)}
+
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:16px;background:transparent;cursor:pointer}
+  input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--bg-3)}
+  input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--bg-3)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:1px solid var(--line-2);box-shadow:0 1px 2px rgba(11,16,19,.15);margin-top:-5px}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:1px solid var(--line-2);box-shadow:0 1px 2px rgba(11,16,19,.15)}
+  input[type=range]:hover::-webkit-slider-thumb{border-color:var(--accent)}
+  input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+  select{
+    background:#fff;color:var(--ink);border:1px solid var(--line-2);border-radius:8px;
+    padding:8px 10px;font-family:inherit;font-size:13.5px;width:100%;
+    box-shadow:0 1px 2px rgba(11,16,19,.04);cursor:pointer
+  }
+  select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .toggles{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
+
+  .map{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff}
+  .card.key{background:var(--accent-soft);border-color:#c9e4f5}
+  .card h3{font-size:14px;font-weight:700;letter-spacing:-.01em;margin:0 0 8px;color:var(--ink)}
+  .card p{margin:0 0 6px;color:var(--body);font-size:13.5px;line-height:1.6}
+  .card p:last-child{margin-bottom:0}
+  .card p b{color:var(--ink);font-weight:600}
+
+  .note{
+    margin-top:28px;color:var(--muted);font-size:13.5px;line-height:1.75;
+    border-top:1px solid var(--line);padding-top:18px
+  }
+  .note code{
+    font-family:var(--mono);font-size:12.5px;color:var(--ink);
+    background:var(--bg-2);border:1px solid var(--line);border-radius:5px;padding:2px 6px
+  }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -89,11 +130,16 @@
 <div class="wrap">
 
   <header>
-    <h1>Hand<span>/</span>Vocoder</h1>
-    <p class="sub">Open your hand and the vocoder comes on. Close it and your voice drops back to dry. 20 band channel vocoder, all Web Audio.</p>
-    <div class="status"><span class="dot" id="dot"></span><span id="statusText">Standby</span></div>
-    <button id="startBtn">Start</button>
-    <button id="stopBtn" class="ghost" hidden>Stop</button>
+    <div class="head-text">
+      <p class="eyebrow">Instrument</p>
+      <h1>Hand Vocoder</h1>
+      <p class="sub">Open your hand and the vocoder comes on. Close it and your voice drops back to dry. 20&#8209;band channel vocoder, all Web Audio.</p>
+    </div>
+    <div class="head-actions">
+      <div class="status"><span class="dot" id="dot"></span><span id="statusText">Standby</span></div>
+      <button id="startBtn">Start</button>
+      <button id="stopBtn" class="ghost" hidden>Stop</button>
+    </div>
   </header>
 
   <div class="grid">
@@ -213,7 +259,7 @@
   </div>
 
   <p class="note">
-    Serve this locally so the browser grants camera and mic access: <b>python3 -m http.server 8000</b>, then open <b>http://localhost:8000/</b>. Headphones required. Raise mic gain until the band ladder moves clearly on speech, then set drive so consonants cut through.
+    Serve this locally so the browser grants camera and mic access: <code>python3 -m http.server 8000</code>, then open <code>http://localhost:8000/</code>. Headphones required. Raise mic gain until the band ladder moves clearly on speech, then set drive so consonants cut through.
   </p>
 </div>
 
@@ -227,6 +273,9 @@ const CONNECTIONS = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10
 const NOTES = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"];
 const PENT = [0,3,5,7,10];
 const TIPS = [8,12,16,20], PIPS = [6,10,14,18];
+
+// overlay + meter palette, kept in step with the CSS custom properties
+const COLOR = { hot:"#d97706", cool:"#1a8fd1", track:"rgba(11,16,19,.05)", axis:"rgba(211,218,225,.9)" };
 
 const $ = id => document.getElementById(id);
 const cap = s => s[0].toUpperCase() + s.slice(1);
@@ -420,19 +469,29 @@ function drawOverlay(marks) {
   const w = overlay.width, h = overlay.height;
   octx.clearRect(0, 0, w, h);
   for (const { lm, live } of marks) {
-    const col = live ? "#ffb545" : "#3fe0d0";
-    octx.strokeStyle = live ? "rgba(255,181,69,.75)" : "rgba(63,224,208,.5)";
-    octx.lineWidth = live ? 3 : 2;
+    const col = live ? COLOR.hot : COLOR.cool;
+    // white underlay so the skeleton stays readable over a bright camera feed
+    octx.strokeStyle = "rgba(255,255,255,.85)";
+    octx.lineWidth = live ? 6 : 5;
     octx.beginPath();
     for (const [a, b] of CONNECTIONS) {
       octx.moveTo(lm[a].x * w, lm[a].y * h);
       octx.lineTo(lm[b].x * w, lm[b].y * h);
     }
     octx.stroke();
+    octx.strokeStyle = col;
+    octx.lineWidth = live ? 3 : 2;
+    octx.stroke();
+
     octx.fillStyle = col;
-    for (const p of lm) { octx.beginPath(); octx.arc(p.x * w, p.y * h, live ? 4 : 3, 0, 6.3); octx.fill(); }
+    octx.strokeStyle = "rgba(255,255,255,.9)";
+    octx.lineWidth = 1.5;
+    for (const p of lm) {
+      octx.beginPath(); octx.arc(p.x * w, p.y * h, live ? 4 : 3, 0, 6.3);
+      octx.fill(); octx.stroke();
+    }
     if (live) {
-      octx.strokeStyle = "rgba(255,181,69,.35)"; octx.lineWidth = 2;
+      octx.strokeStyle = "rgba(217,119,6,.45)"; octx.lineWidth = 2;
       octx.beginPath(); octx.arc(lm[9].x * w, lm[9].y * h, 46, 0, 6.3); octx.stroke();
     }
   }
@@ -444,17 +503,17 @@ function drawLadder() {
   if (ladder.width !== Math.round(w * dpr)) { ladder.width = w * dpr; ladder.height = h * dpr; }
   lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   lctx.clearRect(0, 0, w, h);
-  const pad = 8, bw = (w - pad * 2) / NB, g = smooth.gate;
+  const pad = 10, bw = (w - pad * 2) / NB, g = smooth.gate;
   for (let i = 0; i < NB; i++) {
     const v = Math.min(1, envValues[i]);
-    const bh = Math.max(1.5, v * (h - pad * 2));
+    const bh = Math.max(2, v * (h - pad * 2));
     const x = pad + i * bw;
-    lctx.fillStyle = "rgba(122,83,32,.3)";
+    lctx.fillStyle = COLOR.track;
     lctx.fillRect(x + 1, pad, bw - 2, h - pad * 2);
-    lctx.fillStyle = `rgba(255,181,69,${(0.2 + v * 0.6) * (0.25 + g * 0.75)})`;
+    lctx.fillStyle = `rgba(217,119,6,${(0.25 + v * 0.6) * (0.28 + g * 0.72)})`;
     lctx.fillRect(x + 1, h - pad - bh, bw - 2, bh);
   }
-  lctx.strokeStyle = "rgba(37,56,74,.9)";
+  lctx.strokeStyle = COLOR.axis;
   lctx.beginPath(); lctx.moveTo(pad, h - pad); lctx.lineTo(w - pad, h - pad); lctx.stroke();
 }
 
